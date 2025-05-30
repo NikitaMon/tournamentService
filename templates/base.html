@@ -20,21 +20,28 @@
                     {% if request.user|in_group:'admin' %}
                         <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
                             <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
-                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="{% url 'tournaments:latest' %}" class="head_text">Прошедшие Турниры</a></li>
                             <li><a href="#" class="head_text">Создать Организатора</a></li>
                         </ul>
                     {% elif request.user|in_group:'organizer' %}
                         <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
                             <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
-                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="{% url 'tournaments:latest' %}" class="head_text">Прошедшие Турниры</a></li>
                             <li><a href="{% url 'tournaments:create_tournament' %}" class="head_text">Разместить Турнир</a></li>
                             <li><a href="#" class="head_text">Созданные турниры</a></li>
+                        </ul>
+                    {% elif request.user|in_group:'participant' %}
+                        <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
+                            <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
+                            <li><a href="{% url 'tournaments:latest' %}" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="{% url 'tournaments:myRegistrations' %}" class="head_text">Мои Регистрации</a></li>
+                            <li><a href="#" class="head_text">Информация</a></li>
+                            <li><a href="#" class="head_text">О нас</a></li>
                         </ul>
                     {% else %}
                         <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
                             <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
-                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
-                            <li><a href="{% url 'tournaments:myRegistrations' %}" class="head_text">Мои Регистрации</a></li>
+                            <li><a href="{% url 'tournaments:latest' %}" class="head_text">Прошедшие Турниры</a></li>
                             <li><a href="#" class="head_text">Информация</a></li>
                             <li><a href="#" class="head_text">О нас</a></li>
                         </ul>
@@ -42,7 +49,7 @@
                 {% else %}
                     <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
                         <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
-                        <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                        <li><a href="{% url 'tournaments:latest' %}" class="head_text">Прошедшие Турниры</a></li>
                         <li><a href="#" class="head_text">Информация</a></li>
                         <li><a href="#" class="head_text">О нас</a></li>
                     </ul>

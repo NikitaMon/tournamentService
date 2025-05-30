@@ -32,7 +32,7 @@ def latest(request):
     ).order_by('-created_at')
     return render(request, 'latest.html', {'tournaments': tournaments})
 
-
+@login_required
 def myRegistrations(request):
     if not request.user.is_authenticated:
         return redirect('login')
