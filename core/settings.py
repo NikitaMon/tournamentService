@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+!tzy4oomcw&yyhl)7%&osz8&1@)0w*a-hzd&t+)=6m0nwem=3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Temporarily enable for testing
+DEBUG = False  # Temporarily enable for testing
 
 #ALLOWED_HOSTS = ['mytournament.ru', 'www.mytournament.ru', '127.0.0.1', 'localhost', '89.111.152.55']
 ALLOWED_HOSTS = ['*']  # Временно для отладки
