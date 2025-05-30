@@ -1,0 +1,57 @@
+<div class="card">
+    <div class="card-header bg-light">
+        <h5>Стандартные категории</h5>
+    </div>
+    <div class="card-body">
+        {% if categories %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Вид борьбы</th>
+                        <th>Тип категории</th>
+                        <th>Код</th>
+                        <th>Название</th>
+                        <th>Пол</th>
+                        <th>Возраст</th>
+                        <th>Весовые категории</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td>{{ category.fighting_style.name }}</td>
+                        <td>{{ category.category_type }}</td>
+                        <td>{{ category.code }}</td>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.get_gender_display }}</td>
+                        <td>
+                            {% if category.age_from and category.age_to %}
+                                {{ category.age_from }}-{{ category.age_to }} лет
+                            {% elif category.age_from %}
+                                от {{ category.age_from }} лет
+                            {% elif category.age_to %}
+                                до {{ category.age_to }} лет
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for weight in category.weight_categories %}
+                                {{ weight }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            Нет категорий, соответствующих выбранным фильтрам.
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+
+{% block css %}
+{% endblock css %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Регистрация на турнир: {{ tournament.title }}</h2>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if existing_reg %}
+    <div class="alert alert-info">
+        Вы уже зарегистрированы на этот турнир в следующих категориях:
+        <ul>
+            {% for reg in existing_reg %}
+            <li>{{ reg.tournament_category.actual_name }} ({{ reg.weight_category }} кг, {{ reg.belt_level }})</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        {% include "tournaments/partials/authenticated_registration.html" %}
+    {% else %}
+        {% include "tournaments/partials/unauthenticated_registration.html" %}
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categorySelect = document.getElementById('id_tournament_category');
+    const weightContainer = document.getElementById('weight-category-container');
+    const weightSelect = document.getElementById('id_weight_category');
+    const beltContainer = document.getElementById('belt-level-container');
+    const beltSelect = document.getElementById('id_belt_level');
+    const categoryInfo = document.getElementById('category-info');
+    const ageRestrictions = document.getElementById('age-restrictions');
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            
+            if (categoryId) {
+                fetch(`/get-category-info/${categoryId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Обновляем весовые категории
+                        weightSelect.innerHTML = '<option value="">-- Выберите вес --</option>';
+                        if (data.weights && data.weights.length > 0) {
+                            data.weights.forEach(weight => {
+                                const option = document.createElement('option');
+                                option.value = weight;
+                                option.textContent = weight;
+                                weightSelect.appendChild(option);
+                            });
+                            weightContainer.style.display = 'block';
+                        } else {
+                            weightContainer.style.display = 'none';
+                        }
+
+                        // Обновляем уровни поясов
+                        beltSelect.innerHTML = '<option value="">-- Выберите пояс --</option>';
+                        if (data.belts && data.belts.length > 0) {
+                            data.belts.forEach(belt => {
+                                const option = document.createElement('option');
+                                option.value = belt;
+                                option.textContent = belt;
+                                beltSelect.appendChild(option);
+                            });
+                            beltContainer.style.display = 'block';
+                        } else {
+                            beltContainer.style.display = 'none';
+                        }
+
+                        // Обновляем информацию о возрастных ограничениях
+                        if (data.age_from || data.age_to) {
+                            let ageText = '';
+                            if (data.age_from && data.age_to) {
+                                ageText = `от ${data.age_from} до ${data.age_to} лет`;
+                            } else if (data.age_from) {
+                                ageText = `от ${data.age_from} лет`;
+                            } else if (data.age_to) {
+                                ageText = `до ${data.age_to} лет`;
+                            }
+                            ageRestrictions.textContent = ageText;
+                            categoryInfo.style.display = 'block';
+                        } else {
+                            categoryInfo.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Произошла ошибка при загрузке данных категории');
+                    });
+            } else {
+                weightContainer.style.display = 'none';
+                beltContainer.style.display = 'none';
+                categoryInfo.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

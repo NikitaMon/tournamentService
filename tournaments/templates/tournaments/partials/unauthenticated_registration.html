@@ -1,0 +1,133 @@
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+<form method="post" class="mt-4" id="registrationForm">
+    {% csrf_token %}
+    
+    <div class="card mb-4">
+        <div class="card-header">Информация об участнике</div>
+        <div class="card-body">
+            {{ participant_form|crispy }}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Выбор категории</div>
+        <div class="card-body">
+            <div class="mb-3">
+                {{ reg_form.tournament_category|as_crispy_field }}
+            </div>
+            
+            <div id="category-info" class="alert alert-info mb-3" style="display: none;">
+                <strong>Возрастные ограничения:</strong>
+                <span id="age-restrictions"></span>
+            </div>
+            
+            <div id="weight-category-container" class="mb-3" style="display: none;">
+                <label for="id_weight_category" class="form-label">Весовая категория (кг):</label>
+                <select name="weight_category" id="id_weight_category" class="form-select" required>
+                    <option value="">-- Выберите вес --</option>
+                </select>
+            </div>
+
+            <div id="belt-level-container" class="mb-3" style="display: none;">
+                <label for="id_belt_level" class="form-label">Уровень пояса:</label>
+                <select name="belt_level" id="id_belt_level" class="form-select" required>
+                    <option value="">-- Выберите пояс --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary" id="submitButton">Зарегистрироваться</button>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registrationForm');
+    const submitButton = document.getElementById('submitButton');
+    const categorySelect = document.getElementById('id_tournament_category');
+    const weightSelect = document.getElementById('id_weight_category');
+    const beltSelect = document.getElementById('id_belt_level');
+
+    // Функция для проверки полей неавторизованного участника
+    function validateUnregisteredFields() {
+        const requiredFields = {
+            'id_first_name': 'Имя',
+            'id_last_name': 'Фамилия',
+            'id_surname': 'Отчество',
+            'id_email': 'Email',
+            'id_birth_date': 'Дата рождения'
+        };
+
+        let isValid = true;
+        for (const [id, label] of Object.entries(requiredFields)) {
+            const field = document.getElementById(id);
+            if (field && !field.value.trim()) {
+                alert(`Пожалуйста, заполните поле "${label}"`);
+                field.focus();
+                isValid = false;
+                break;
+            }
+        }
+
+        // Проверка email
+        const emailField = document.getElementById('id_email');
+        if (emailField && emailField.value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailField.value)) {
+                alert('Пожалуйста, введите корректный email адрес');
+                emailField.focus();
+                isValid = false;
+            }
+        }
+
+        // Проверка даты рождения
+        const birthDateField = document.getElementById('id_birth_date');
+        if (birthDateField && birthDateField.value) {
+            const birthDate = new Date(birthDateField.value);
+            const today = new Date();
+            if (birthDate > today) {
+                alert('Дата рождения не может быть в будущем');
+                birthDateField.focus();
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Проверяем поля неавторизованного участника
+        if (!validateUnregisteredFields()) {
+            return;
+        }
+        
+        // Проверяем заполнение обязательных полей категории
+        if (!categorySelect.value) {
+            alert('Пожалуйста, выберите категорию');
+            categorySelect.focus();
+            return;
+        }
+        
+        if (!weightSelect.value) {
+            alert('Пожалуйста, выберите весовую категорию');
+            weightSelect.focus();
+            return;
+        }
+        
+        if (!beltSelect.value) {
+            alert('Пожалуйста, выберите уровень пояса');
+            beltSelect.focus();
+            return;
+        }
+
+        // Если все поля заполнены, отправляем форму
+        submitButton.disabled = true;
+        submitButton.textContent = 'Отправка...';
+        form.submit();
+    });
+});
+</script> 

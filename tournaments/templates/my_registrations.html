@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>Мои регистрации на турниры</h2>
+    
+    <!-- Текущие регистрации -->
+    <div class="card mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Предстоящие турниры</h4>
+        </div>
+        
+        <div class="card-body">
+            {% if upcoming_registrations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Турнир</th>
+                                <th>Дата</th>
+                                <th>Категория</th>
+                                <th>Вес</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in upcoming_registrations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'tournaments:tournament_detail' pk=reg.Tournament.pk %}">
+                                            {{ reg.Tournament.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ reg.Tournament.tournament_start|date:"d.m.Y" }} - 
+                                        {{ reg.Tournament.tournament_end|date:"d.m.Y" }}
+                                    </td>
+                                    <td>
+                                        {{ reg.tournament_category.template.name }}
+                                        {% if reg.tournament_category.template.gender %}
+                                            ({{ reg.tournament_category.template.get_gender_display }})
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ reg.weight_category }} кг</td>
+                                    <td>
+                                        {% if reg.Tournament.registration_deadline|date:"Y-m-d" >= today|date:"Y-m-d" %}
+                                            <span class="badge bg-success">Регистрация открыта</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Регистрация закрыта</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if reg.Tournament.registration_deadline|date:"Y-m-d" >= today|date:"Y-m-d" %}
+                                            <a href="#" class="btn btn-sm btn-outline-danger"></a>
+                                                onclick="confirmCancel('{% url 'tournaments:cancel_registration' pk=reg.pk %}')">
+                                                Отменить
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    У вас нет предстоящих турниров
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Прошедшие регистрации -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Прошедшие турниры</h4>
+        </div>
+        
+        <div class="card-body">
+            {% if past_registrations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Турнир</th>
+                                <th>Дата</th>
+                                <th>Категория</th>
+                                <th>Вес</th>
+                                <th>Результат</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reg in past_registrations %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'tournaments:tournament_detail' pk=reg.Tournament.pk %}">
+                                            {{ reg.Tournament.title }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ reg.Tournament.tournament_start|date:"d.m.Y" }} - 
+                                        {{ reg.Tournament.tournament_end|date:"d.m.Y" }}
+                                    </td>
+                                    <td>
+                                        {{ reg.tournament_category.template.name }}
+                                        {% if reg.tournament_category.template.gender %}
+                                            ({{ reg.tournament_category.template.get_gender_display }})
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ reg.weight_category }} кг</td>
+                                    <td>
+                                        {% if reg.result %}
+                                            {{ reg.result }}
+                                        {% else %}
+                                            <span class="text-muted">Не указан</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    У вас нет завершенных турниров
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmCancel(url) {
+    if (confirm('Вы действительно хотите отменить регистрацию на турнир?')) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при отмене регистрации');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

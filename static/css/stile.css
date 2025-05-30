@@ -1,0 +1,82 @@
+.wrapper { 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.btn1{
+    cursor: pointer;
+    text-decoration:none;
+
+    margin-right: .5rem;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+
+    
+
+    color:white;
+    background: RGBA(33,37,41);
+
+    border: 0.1rem #fff solid;
+    padding: 0.4rem;
+    padding-left: 1rem;
+    padding-right: 1rem;    
+    border-radius: 0.4rem;
+
+    font-size: 20px;
+    font-weight: 20px;
+
+    transition: all 0.3s;
+}
+.btn1:hover{
+    background-color: #fff;
+    color: black;
+}
+.btn1:active {
+    transform: scale(0.9);
+}
+
+.head_main,.head_text,.login_text,.exit_text{
+    display:block;
+    font-size: 20px;
+    font-weight: 20px;
+
+    padding: .5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+
+    color: #fff;
+    text-decoration:none;
+    transition: color 1s;
+}
+.head_text:hover {
+    transform: scale(1.2);
+    color: darkorange;
+}
+.head_main:hover{
+    transform: scale(1.2);
+    color: rgb(0, 190, 0);
+}
+.login_text:hover{
+    transform: scale(1.2);
+    color: rgb(11, 165, 226);
+}
+.exit_text{
+    background-color:transparent;
+    border-color: transparent;
+}
+.exit_text:hover{
+    transform: scale(1.2);
+    color: rgb(219, 49, 19);
+}
+
+.text-end{
+    text-align:right;
+}
+
+.form-create{
+    max-width: 900px;
+    padding: 1rem;
+}
+

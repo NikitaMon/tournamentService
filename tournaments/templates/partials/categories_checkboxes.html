@@ -1,0 +1,9 @@
+{% for category in categories %}
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" name="categories" value="{{ category.id }}" id="category_{{ category.id }}">
+    <label class="form-check-label" for="category_{{ category.id }}">
+        {{ category.name }}
+        <small class="text-muted">[{{ category.fighting_style.name }}]</small>
+    </label>
+</div>
+{% endfor %}

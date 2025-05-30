@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Оплата участия в турнире</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Информация о регистрации:</h5>
+                    <p><strong>Турнир:</strong> {{ registration.tournament.title }}</p>
+                    <p><strong>Категория:</strong> {{ registration.tournament_category.actual_name }}</p>
+                    <p><strong>Весовая категория:</strong> {{ registration.weight_category }} кг</p>
+                    <p><strong>Уровень пояса:</strong> {{ registration.belt_level }}</p>
+                    
+                    <hr>
+                    
+                    <h5>Сумма к оплате:</h5>
+                    <p class="h3 text-primary">{{ registration.tournament.get_current_registration_price }} ₽</p>
+                
+                    
+                    <div class="mt-4">
+                        <form method="post" action="{% url 'payments:create_payment' registration.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Оплатить
+                            </button>
+                            <a href="{% url 'tournaments:tournament_detail' registration.tournament.id %}" class="btn btn-secondary">
+                                Вернуться к турниру
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

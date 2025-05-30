@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load auth_tags %}
+{% load static %}
+
+{% block css %}
+<style>
+    .tournament-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('{% static "image/img3.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        border-radius: 10px;
+    }
+    .tournament-image {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .info-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    .info-card .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        font-weight: 500;
+        padding: 1rem;
+    }
+    .info-card .card-body {
+        padding: 1.5rem;
+    }
+    .table th {
+        width: 40%;
+        color: #495057;
+        font-weight: 500;
+    }
+    .badge-newbies {
+        background-color: #28a745;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    .btn-register {
+        background-color: #007bff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+    }
+    .btn-register:hover {
+        background-color: #0056b3;
+    }
+    .category-badge {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        margin: 0.25rem;
+        display: inline-block;
+    }
+    .description-text {
+        line-height: 1.6;
+        color: #495057;
+        white-space: pre-line;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Заголовок турнира -->
+    <div class="tournament-header text-center mb-4">
+        <h1 class="display-4 mb-3">{{ tournament.title }}</h1>
+        {% if tournament.newbies %}
+            <span class="badge-newbies">
+                <i class="fas fa-user-plus"></i>#Новички
+            </span>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <!-- Левая колонка -->
+        <div class="col-md-4">
+            <div class="card info-card">
+                {% if tournament.image %}
+                    <img src="{{ tournament.image.url }}" class="card-img-top tournament-image" alt="{{ tournament.title }}">
+                {% else %}
+                    <img src="{% static 'image/img2.jpg' %}" class="card-img-top tournament-image" alt="Заглушка">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if user.is_authenticated %}
+                            {% if request.user|in_group:'participant' %}
+                                <a href="{% url 'tournaments:registration_tournament' tournament.pk %}" class="btn btn-register btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Зарегистрироваться на турнир
+                                </a>
+                            {% elif request.user|in_group:'organizer' %}
+                                {% if request.user == profile_organizer.user %}
+                                    <a class="btn btn-register btn-primary">
+                                        <i class="fas fa-edit me-2"></i>Изменить турнир
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'tournaments:registration_tournament' tournament.pk %}" class="btn btn-register btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Зарегистрироваться без аккаунта
+                            </a>
+                        {% endif %}
+
+                        <a href="{% url 'tournaments:view_participants' tournament.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-users me-2"></i>Список участников
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="col-md-8">
+            <!-- Информация об организаторе -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-building me-2"></i>Информация об организаторе</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th><i class="fas fa-user me-2"></i>ФИО</th>
+                            <td>{{ profile_organizer.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-envelope me-2"></i>Email</th>
+                            <td>{{ profile_organizer.user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-phone me-2"></i>Телефон</th>
+                            <td>{{ profile_organizer.company_phone }}</td>
+                        </tr>
+                        <!-- <tr>
+                            <th><i class="fas fa-map-marker-alt me-2"></i>Адрес</th>
+                            <td>{{ profile_organizer.company_address }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-briefcase me-2"></i>Название организации</th>
+                            <td>{{ profile_organizer.company_name }}</td>
+                        </tr> -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- Информация о турнире -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Информация о турнире</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th><i class="fas fa-fist-raised me-2"></i>Стили борьбы</th>
+                            <td>{{ tournament.fs_qset }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-calendar-check me-2"></i>Регистрация</th>
+                            <td>{{ tournament.get_current_registration_info }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-clock me-2"></i>Окончание регистрации</th>
+                            <td>{{ tournament.deadline }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-ruble-sign me-2"></i>Цена</th>
+                            <td>{{ tournament.get_current_registration_price }} ₽</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-map-marker-alt me-2"></i>Адрес</th>
+                            <td>{{ tournament.location }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-map-marker-alt me-2"></i>Дата начала турнира   </th>
+                            <td>{{ tournament.tournament_start }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="fas fa-map-marker-alt me-2"></i>Дата окончания турнира</th>
+                            <td>{{ tournament.tournament_end }}</td>
+                        </tr>
+                        <!-- <tr>
+                            <th><i class="fas fa-history me-2"></i>Дата обновления</th>
+                            <td>{{ tournament.updated_at }}</td>
+                        </tr> -->
+                    </table>
+                </div>
+            </div>
+            <!-- Информация о категориях -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-list me-2"></i>Категории турнира</h4>
+                </div>
+                <div class="card-body">
+                    {% for categ in tournament.tournament_categories.all %}
+                        <span class="category-badge">{{ categ.template.name }}</span>
+                    {% empty %}
+                        <p class="text-muted mb-0">Нет активных категорий</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <hr class="my-3">
+            <!-- Описание турнира -->
+            {% if tournament.description %}
+            <div class="card info-card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-align-left me-2"></i>Описание турнира</h4>
+                </div>
+                <div class="card-body">
+                    <p class="description-text">{{ tournament.description }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}

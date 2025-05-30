@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+{% load static %}
+
+{% block css %}
+<style>
+    .registration-card {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+    }
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+    .btn-primary {
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+    .text-muted {
+        font-size: 0.85rem;
+    }
+    .alert-danger {
+        border-radius: 8px;
+        border: none;
+        background-color: #fff5f5;
+        color: #dc3545;
+    }
+    .password-requirements {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    .password-requirements li {
+        margin-bottom: 0.25rem;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    .password-requirements li:before {
+        content: "•";
+        position: absolute;
+        left: 0.5rem;
+        color: #6c757d;
+    }
+    .errorlist {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+    .errorlist li {
+        margin-bottom: 0.25rem;
+    }
+    .invalid-feedback {
+        display: block;
+        margin-top: 0.25rem;
+    }
+    .user-type-options {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .user-type-option {
+        flex: 1;
+        padding: 1rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .user-type-option:hover {
+        border-color: #0d6efd;
+    }
+    .user-type-option.selected {
+        border-color: #0d6efd;
+        background-color: #f8f9ff;
+    }
+    .user-type-option input[type="radio"] {
+        display: none;
+    }
+    .user-type-option label {
+        display: block;
+        text-align: center;
+        margin: 0;
+        cursor: pointer;
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+<div class="container mt-5 flex-lg-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="registration-card">
+                <h2 class="mb-4 text-center">{{ context.title }}</h2>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger mb-4">
+                            {% for error in form.non_field_errors %}
+                                <p class="mb-1">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        {{ form.username|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.email|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.password1|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.password2|as_crispy_field }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Тип пользователя</label>
+                        <div class="user-type-options">
+                            <div class="user-type-option">
+                                <input type="radio" name="user_type" value="participant" id="user_type_user" checked>
+                                <label for="user_type_user">
+                                    <i class="fas fa-user"></i>
+                                    <div>Участник</div>
+                                    <small class="text-muted">Регистрация для участия в турнирах</small>
+                                </label>
+                            </div>
+                            <div class="user-type-option">
+                                <input type="radio" name="user_type" value="organizer" id="user_type_organizer">
+                                <label for="user_type_organizer">
+                                    <i class="fas fa-trophy"></i>
+                                    <div>Организатор</div>
+                                    <small class="text-muted">Создание и управление турнирами</small>
+                                </label>
+                            </div>
+                            <div class="user-type-option">
+                                <input type="radio" name="user_type" value="coach" id="user_type_coach">
+                                <label for="user_type_coach">
+                                    <i class="fas fa-user-tie"></i>
+                                    <div>Тренер</div>
+                                    <small class="text-muted">Управление группой участников</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-4">Зарегистрироваться</button>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Уже есть аккаунт? <a href="{% url 'accounts:login' %}" class="text-decoration-none">Войти</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const options = document.querySelectorAll('.user-type-option');
+    options.forEach(option => {
+        option.addEventListener('click', function() {
+            // Удаляем класс selected у всех опций
+            options.forEach(opt => opt.classList.remove('selected'));
+            // Добавляем класс selected к выбранной опции
+            this.classList.add('selected');
+            // Устанавливаем значение radio button
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+        });
+    });
+    
+    // Выбираем первую опцию по умолчанию
+    options[0].classList.add('selected');
+});
+</script>
+{% endblock content %}

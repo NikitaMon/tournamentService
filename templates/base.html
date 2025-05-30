@@ -1,0 +1,92 @@
+{% load static %}
+{% load auth_tags %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}МойТурнир{% endblock %}</title>
+    <link href="{% static "css/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/stile.css" %}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+</head>
+<body>
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                {% if user.is_authenticated %}
+                    {% if request.user|in_group:'admin' %}
+                        <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
+                            <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
+                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="#" class="head_text">Создать Организатора</a></li>
+                        </ul>
+                    {% elif request.user|in_group:'organizer' %}
+                        <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
+                            <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
+                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="{% url 'tournaments:create_tournament' %}" class="head_text">Разместить Турнир</a></li>
+                            <li><a href="#" class="head_text">Созданные турниры</a></li>
+                        </ul>
+                    {% else %}
+                        <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
+                            <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
+                            <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                            <li><a href="{% url 'tournaments:myRegistrations' %}" class="head_text">Мои Регистрации</a></li>
+                            <li><a href="#" class="head_text">Информация</a></li>
+                            <li><a href="#" class="head_text">О нас</a></li>
+                        </ul>
+                    {% endif %}
+                {% else %}
+                    <ul class="nav col-12 col-lg-auto me-lg-auto justify-content-start">
+                        <li><a href="{% url 'tournaments:index' %}" class="head_main">МойТурнир</a></li>
+                        <li><a href="#" class="head_text">Прошедшие Турниры</a></li>
+                        <li><a href="#" class="head_text">Информация</a></li>
+                        <li><a href="#" class="head_text">О нас</a></li>
+                    </ul>
+                {% endif %}
+
+                <div class="text-end user-actions d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="login_text">Профиль</a>
+                    <form action="{% url 'accounts:logout' %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="exit_text">Выход</button>
+                    </form>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="login_text">Войти</a>
+                        <a href="{% url 'accounts:registration' %}" class="login_text">Регистрация</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <div class="container">
+      <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <div class="col-md-4 d-flex align-items-center">
+          <span class="mb-3 mb-md-0 text-body-secondary">© 2024 Company, Inc</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="{% static "css/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    {% block js %}{% endblock %}
+</body>
+</html>

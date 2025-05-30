@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load auth_tags %}
+{% load static %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+  {% if user|in_group:'participant' %}
+    <!-- Редактирование обычного пользователя -->
+    {% include "accounts/redacted_user.html" %}
+  
+  {% elif user|in_group:'organizer' %}
+    <!-- Редактирование организатора -->
+    {% include "accounts/redacted_organizer.html" %}
+
+  {% elif user|in_group:'coach' %}
+    <!-- Редактирование тренера -->
+    {% include "accounts/redacted_coach.html" %}
+
+  {% elif user.is_superuser %}
+    <!-- Суперпользователь -->
+    <div class="m-5">
+        <h4 class="text-center">
+            <a href="/admin">Нажмите чтобы перейти в админ панель</a>
+        </h4>
+    </div>
+  
+  {% else %}
+    <!-- Пользователь без группы -->
+    <div class="m-5">
+        <h4 class="text-center">Скорее всего этот аккаунт создал суперпользователь и он не привязал вас к группам</h4>
+    </div>
+  {% endif %}
+
+{% else %}
+    <!-- 404 -->
+    <div class="m-5">
+        <h4 class="text-center">Эх.. ну тут определённо 404</h4>
+    </div>
+{% endif %}
+
+{% endblock %}
+

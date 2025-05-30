@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load auth_tags %}
+{% load static %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+  {% if user|in_group:'participant' %}
+    <!-- Профиль обычного пользователя -->
+    {% include "accounts/profile_user.html" %}
+  
+  {% elif user|in_group:'organizer' %}
+    <!-- Профиль организатора -->
+    {% include "accounts/profile_organizer.html" %}
+  
+  {% elif user|in_group:'coach' %}
+    <!-- Профиль тренера -->
+    {% include "accounts/profile_coach.html" %}
+
+  {% elif user.is_superuser %}
+    <!-- Суперпользователь -->
+    <div class="m-5">
+        <h4 class="text-center">
+            <a href="/admin">Нажмите чтобы перейти в админ панель</a>
+        </h4>
+    </div>
+  
+  {% else %}
+    <!-- Пользователь без группы -->
+    <div class="m-5">
+        <h4 class="text-center">Скорее всего этот аккаунт создал суперпользователь и он не привязал вас к группам</h4>
+    </div>
+  {% endif %}
+
+{% else %}
+    <div class="m-5">
+        <h4 class="text-center">Ошибка</h4>
+    </div>
+{% endif %}
+<style>
+    .avatar-lg {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    .info-item {
+        margin-bottom: 1.5rem;
+    }
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+</style>
+{% endblock %}

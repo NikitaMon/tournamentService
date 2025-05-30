@@ -1,0 +1,15 @@
+Django==5.2.1
+psycopg2-binary==2.9.9
+django-crispy-forms==2.1
+crispy-bootstrap5==2023.10
+django-widget-tweaks==1.5.0
+django-filter==24.1
+Pillow==10.2.0
+gunicorn==21.2.0
+python-dotenv==1.0.1
+yookassa==2.3.0
+whitenoise==6.6.0
+django-storages==1.14.2
+django-cors-headers==4.3.1
+django-debug-toolbar==4.3.0
+django-environ==0.11.2 
